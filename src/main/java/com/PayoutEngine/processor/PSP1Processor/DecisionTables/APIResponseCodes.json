@@ -1,0 +1,30 @@
+{
+  "rules": [
+    {
+      "api": "REMIT",
+      "responseCode": "200",
+      "subResponseCode": "1000",
+      "actions": {
+        "isSuccessCode": true,
+        "raiseAlert": false,
+        "responseMsg": "Transaction Acknowledged successfully",
+        "retryRequired": true,
+        "retryIntervalInMin": 5,
+        "apiToCall": "STATUS"
+      }
+    },
+    {
+      "api": "STATUS",
+      "responseCode": "200",
+      "subResponseCode": "1001",
+      "actions": {
+        "isSuccessCode": true,
+        "raiseAlert": false,
+        "responseMsg": "Paid successful",
+        "retryRequired": false,
+        "retryIntervalInMin": 0,
+        "apiToCall": ""
+      }
+    }
+  ]
+}
