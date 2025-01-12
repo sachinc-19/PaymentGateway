@@ -4,6 +4,6 @@ RUN mvn clean package -DskipTests
 
 FROM openjdk:23
 WORKDIR /PayoutEngine
-COPY ./target/PayoutEngine-0.0.1-SNAPSHOT.jar /PayoutEngine
+COPY --from=build ./target/PayoutEngine-0.0.1-SNAPSHOT.jar payoutengine.jar
 EXPOSE 8080
-CMD ["java", "-jar", "PayoutEngine-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "payoutengine.jar"]
