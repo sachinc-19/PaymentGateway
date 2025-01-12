@@ -1,17 +1,41 @@
 package com.PayoutEngine.engine;
 
+import com.PayoutEngine.model.PSPRouting;
 import com.PayoutEngine.model.PayoutRequest;
 import com.PayoutEngine.processor.PaymentServiceProvider;
+import org.kie.api.io.Resource;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
+import org.kie.internal.io.ResourceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.KieRepository;
+import org.kie.api.builder.ReleaseId;
 
 @Service
 public class RoutingEngine {
     @Autowired
     private PSPFactory pspFactory;
+    private KieContainer kieContainer;
 
     public RoutingEngine(PSPFactory pspFactory) {
         this.pspFactory = pspFactory;
+        KieServices kieServices = KieServices.Factory.get();
+
+        Resource dt = ResourceFactory.newClassPathResource("PSPRouting.drl.xls", getClass());
+
+        KieFileSystem kieFileSystem = kieServices.newKieFileSystem().write(dt);
+
+        KieBuilder kieBuilder = kieServices.newKieBuilder(kieFileSystem);
+        kieBuilder.buildAll();
+
+        KieRepository kieRepository = kieServices.getRepository();
+
+        ReleaseId krDefaultReleaseId = kieRepository.getDefaultReleaseId();
+        kieContainer = kieServices.newKieContainer(krDefaultReleaseId);
     }
 
     /**
@@ -22,26 +46,24 @@ public class RoutingEngine {
      * @throws RoutingException If no suitable PSP is found.
      */
     public PaymentServiceProvider getBestPspForTransaction(PayoutRequest payoutRequest) throws RoutingException {
-//        String receivingCountry = payoutRequest.getReceiverCountry();
-//        double amount = payoutRequest.getAmount();
-//        String currency = payoutRequest.getCurrency();
-//
-//        // Fetch PSPs available for this country
-//        List<PSPInfo> availablePSPs = pspFactory.getAvailablePSPs(receivingCountry);
-//
-//        // Apply business rules to select the optimal PSP
-//        Optional<PSPInfo> selectedPSP = availablePSPs.stream()
-//                .filter(psp -> psp.supportsCurrency(currency))       // Currency support check
-//                .filter(psp -> psp.supportsAmount(amount))           // Amount range check
-//                .sorted((psp1, psp2) -> comparePSPs(psp1, psp2))     // Sort by business rules (fees, speed, etc.)
-//                .findFirst();
-//
-//        if (!selectedPSP.isPresent()) {
-//            throw new RoutingException("No suitable PSP found for country: " + receivingCountry);
-//        }
-        return pspFactory.getPSP("DIGIT9");
-    }
+        KieSession kieSession = kieContainer.newKieSession();
 
+        PSPRouting pspRouting = new PSPRouting(payoutRequest.getPayoutTxnDetails().getTransferDetails().getSendCountryCode(),
+                payoutRequest.getPayoutTxnDetails().getTransferDetails().getReceiveCountryCode(),
+                    payoutRequest.getPayoutTxnDetails().getTransferDetails().getReceiveAmount().getCurrencyCode(),
+                        payoutRequest.getPayoutTxnDetails().getPaymentMethod(),
+                            payoutRequest.getPayoutTxnDetails().getTransferDetails().getReceiveAmount().getValue(), null);
+
+        kieSession.insert(pspRouting);
+        kieSession.fireAllRules();
+
+        String partner = pspRouting.getPartner();
+        System.out.println("partner selected after rule fire: " + partner);
+        // UPDATE PSP NAME IN REQUEST
+        payoutRequest.getPayoutTxnDetails().getPartnerDetails().setPartnerName(partner);
+
+        return pspFactory.getPSP(partner);
+    }
     /**
      * Compares two PSPs based on business rules. The comparison logic can be customized as per the requirements.
      *
@@ -49,16 +71,6 @@ public class RoutingEngine {
      * @param psp2 Second PSP
      * @return A negative value if psp1 is preferred over psp2, a positive value if psp2 is preferred over psp1, 0 if equal
      */
-//    private int comparePSPs(PSPInfo psp1, PSPInfo psp2) {
-//        // Example rule: prefer PSP with lower fees
-//        int feeComparison = Double.compare(psp1.getTransactionFee(), psp2.getTransactionFee());
-//        if (feeComparison != 0) {
-//            return feeComparison;
-//        }
-//
-//        // Example rule: if fees are equal, prefer faster PSP
-//        return Long.compare(psp1.getProcessingTime(), psp2.getProcessingTime());
-//    }
 
     public class RoutingException extends RuntimeException {
         public RoutingException(String message) {
