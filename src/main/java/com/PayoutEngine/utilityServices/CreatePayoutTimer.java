@@ -27,7 +27,7 @@ public class CreatePayoutTimer {
         payoutTimerScheduled.setPartner(partner);
         payoutTimerScheduled.setApiname(apiName);
 
-        System.out.println("Creating payout timer in DB");
+        System.out.println("Scheduling [" + apiName + "] timer for [" + partner + "] partner at time [" + scheduleTime + "]");
 
         payoutTimerScheduledRepository.save(payoutTimerScheduled);
     }
