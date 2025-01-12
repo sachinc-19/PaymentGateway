@@ -1,16 +1,28 @@
 package com.PayoutEngine.processor.PSP1Processor.RuleFunctions;
 
+import com.PayoutEngine.processor.PSP1Processor.model.ApiResponse;
+import com.PayoutEngine.repository.dbOperation.UpdateDbObjects;
+import com.PayoutEngine.utilityServices.CreatePayoutTimer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class ResponseHandling {
-    private Map<String, Object> responseConfig;
+    private Map<String, Object> retryConfig;
+    private Map<String, Object> stateChangeConfig;
+    @Autowired
+    private UpdateDbObjects updateDbObjects;
+    @Autowired
+    private CreatePayoutTimer createPayoutTimer;
 
     public ResponseHandling() {
         System.out.println("hello");
@@ -20,7 +32,11 @@ public class ResponseHandling {
             File file = new File("src/main/java/com/PayoutEngine/processor/PSP1Processor/DecisionTables/APIResponseCodes.json");
             // Convert JSON string to Map
             Map<String, Object> config = mapper.readValue(file, Map.class);
-            this.responseConfig = config;
+            this.retryConfig = config;
+            file = new File("src/main/java/com/PayoutEngine/processor/PSP1Processor/DecisionTables/TransitionState.json");
+            config = mapper.readValue(file, Map.class);
+            this.stateChangeConfig = config;
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -29,21 +45,50 @@ public class ResponseHandling {
     public void actionOnValidateResponse() {
     }
 
-    public void actionOnServiceResponse() {
-
-    }
-
-    public void checkForRetry(String api, String responseCode , String subResponseCode) {
+    public void actionOnServiceResponse(String payoutId, String apiName, ApiResponse apiResponse) throws JSONException {
+        System.out.println("-----------------Inside ResponseHandling actionOnServiceResponse PSP1-----------------");
+        //        JSONObject responseObj = new JSONObject(String.valueOf(response));
+        String responseCode = apiResponse.getStatusCode();
+        String subResponseCode = apiResponse.getStatusSubCode();
+        System.out.println("Moving transaction status based on " + apiName + " API response");
+        // 1. change the transaction state if required based on api response
+        System.out.println("api: " + apiName + ", responseCode: " + responseCode + ", subResponseCode: " + subResponseCode);
         // Get the rules array
-        List<Map<String, Object>> rules = (List<Map<String, Object>>) responseConfig.get("rules");
+        List<Map<String, Object>> rules = (List<Map<String, Object>>) stateChangeConfig.get("rules");
 
+        Map<String, Object> actions = null;
         // Loop through each rule and access its properties
         for (Map<String, Object> rule : rules) {
-            if (rule.get("api").equals(api) &&
+            if (rule.get("service").equals(apiName) &&
+                    rule.get("partnerStatus").equals(responseCode) &&
+                    rule.get("partnerSubStatus").equals(subResponseCode)) {
+                // Access the actions object within each rule
+                actions = (Map<String, Object>) rule.get("actions");
+                System.out.println("transitionName: " + actions.get("transitionName"));
+                System.out.println("partnerStatusDescription: " + actions.get("partnerStatusDescription"));
+                System.out.println("----");
+            }
+        }
+        String transitionName = (String) actions.get("transitionName");
+        String description = (String) actions.get("partnerStatusDescription");
+        System.out.println("transitionName: " + transitionName + ", description: " + description);
+        updateDbObjects.updatePayoutTxn(payoutId, "PAYOUT", transitionName, responseCode+" | "+subResponseCode, description);
+        checkForRetry(payoutId, apiName, responseCode, subResponseCode);
+    }
+
+    public void checkForRetry(String payoutId, String apiName, String responseCode , String subResponseCode) {
+        System.out.println("api: " + apiName + ", responseCode: " + responseCode + ", subResponseCode: " + subResponseCode);
+        // Get the rules array
+        List<Map<String, Object>> rules = (List<Map<String, Object>>) retryConfig.get("rules");
+
+        Map<String, Object> actions = null;
+        // Loop through each rule and access its properties
+        for (Map<String, Object> rule : rules) {
+            if (rule.get("api").equals(apiName) &&
                     rule.get("responseCode").equals(responseCode) &&
                     rule.get("subResponseCode").equals(subResponseCode)) {
                 // Access the actions object within each rule
-                Map<String, Object> actions = (Map<String, Object>) rule.get("actions");
+                actions = (Map<String, Object>) rule.get("actions");
                 System.out.println("Is Success Code: " + actions.get("isSuccessCode"));
                 System.out.println("Raise Alert: " + actions.get("raiseAlert"));
                 System.out.println("Response Message: " + actions.get("responseMsg"));
@@ -52,6 +97,15 @@ public class ResponseHandling {
                 System.out.println("API to Call: " + actions.get("apiToCall"));
                 System.out.println("----");
             }
+        }
+        boolean retryRequired = (boolean) actions.get("retryRequired");
+
+        if(retryRequired) {
+            Integer retryIntervalInMins = (Integer) actions.get("retryIntervalInMin");
+            String apiToCall = (String) actions.get("apiToCall");
+
+            createPayoutTimer.upsertTimerInDb(payoutId, LocalDateTime.now(), retryIntervalInMins, "INCREMENT",
+                    "NEW", "PSP1", apiToCall);
         }
     }
 }

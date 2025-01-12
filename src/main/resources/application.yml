@@ -1,0 +1,25 @@
+external-apis:
+  psp:
+    PSP1:
+      api: REMIT
+      url: https://sandbox.free.beeceptor.com/remit
+      method: POST
+    PSP2:
+      api: STATUS
+      url: https://sandbox.free.beeceptor.com/remit
+      method: POST
+      request-body-required: true
+  apis:
+    - name: getUserDetails
+      url: https://jsonplaceholder.typicode.com/todos/{id}
+      method: GET
+    - name: sendRemitPSP1
+      url: https://sandbox.free.beeceptor.com/remit
+      method: POST
+    - name: getStatusPSP1
+      url: https://sandbox.free.beeceptor.com/status/{id}
+      method: GET
+    - name: postTransaction
+      url: https://api.example.com/transactions
+      method: POST
+      request-body-required: true

@@ -3,24 +3,80 @@ package com.PayoutEngine.processor.PSP1Processor;
 import com.PayoutEngine.model.PayoutRequest;
 import com.PayoutEngine.processor.PSP1Processor.RuleFunctions.PartnerAPICalls;
 import com.PayoutEngine.processor.PaymentServiceProvider;
+import com.PayoutEngine.repository.dao.AmountRepository;
+import com.PayoutEngine.repository.dao.PartnerDetailsRepository;
+import com.PayoutEngine.repository.dao.PayoutTxnDetailsRepository;
+import com.PayoutEngine.repository.entities.Amount;
+import com.PayoutEngine.repository.entities.AmountId;
+import com.PayoutEngine.repository.entities.PartnerDetails;
+import com.PayoutEngine.repository.entities.PayoutTxnDetails;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("VISAINTL")
+@Component("PSP1")
 public class PSP1 implements PaymentServiceProvider {
     @Autowired
     PartnerAPICalls partnerAPICalls;
+    @Autowired
+    PayoutTxnDetailsRepository payoutTxnDetailsRepository;
+    @Autowired
+    PartnerDetailsRepository partnerDetailsRepository;
+    @Autowired
+    AmountRepository amountRepository;
+
 
     @Override
     public boolean certifyInput(PayoutRequest payoutRequest) {
-        System.out.println("calling certifyInput from VISAINTL");
+        System.out.println("calling certifyInput from PSP1");
         return true;
     }
 
     @Override
     public boolean certifyInputWithPartner(PayoutRequest payoutRequest) {
-        System.out.println("calling certifyInputWithPartner from VISAINTL");
+        System.out.println("calling certifyInputWithPartner from PSP1");
         partnerAPICalls.validatePaymentAPI(payoutRequest);
         return true;
+    }
+
+    @Override
+    public void retryPartnerApi(String payoutId, String apiToInvoke) throws JSONException {
+        System.out.println(apiToInvoke + " API to be invoked for PSP1 partner");
+        PayoutTxnDetails payoutTxnDetails = payoutTxnDetailsRepository.findById(payoutId).orElse(null);
+        PartnerDetails partnerDetails = partnerDetailsRepository.findById(payoutId).orElse(null);
+        AmountId sendAmountId = new AmountId(payoutId, "SEND");
+        Amount sendAmount = amountRepository.findById(sendAmountId).orElse(null);
+        AmountId receiveAmountId = new AmountId(payoutId, "RECEIVE");
+        Amount receiveAmount = amountRepository.findById(receiveAmountId).orElse(null);
+
+        PayoutRequest payoutRequest = new PayoutRequest();
+        payoutRequest.setPayoutTxnDetails(new com.PayoutEngine.model.PayoutTxnDetails());
+        payoutRequest.getPayoutTxnDetails().setPartnerDetails(new com.PayoutEngine.model.PartnerDetails());
+        payoutRequest.getPayoutTxnDetails().setTransferDetails(new com.PayoutEngine.model.TransferDetails());
+        payoutRequest.getPayoutTxnDetails().getTransferDetails().setSendAmount(new com.PayoutEngine.model.Amount());
+        payoutRequest.getPayoutTxnDetails().getTransferDetails().setReceiveAmount(new com.PayoutEngine.model.Amount());
+
+        payoutRequest.getPayoutTxnDetails().setPayoutId(payoutId);
+        payoutRequest.getPayoutTxnDetails().getPartnerDetails().setAccountNumber(partnerDetails.getAccountnumber());
+        payoutRequest.getPayoutTxnDetails().getPartnerDetails().setBeneficiaryName(partnerDetails.getBeneficiaryname());
+        payoutRequest.getPayoutTxnDetails().getTransferDetails().setSendCountryCode(payoutTxnDetails.getSendcountrycode());
+        payoutRequest.getPayoutTxnDetails().getTransferDetails().setReceiveCountryCode(payoutTxnDetails.getReceivecountrycode());
+        payoutRequest.getPayoutTxnDetails().getTransferDetails().getSendAmount().setValue(sendAmount.getValue());
+        payoutRequest.getPayoutTxnDetails().getTransferDetails().getSendAmount().setCurrencyCode(sendAmount.getCurrencycode());
+        payoutRequest.getPayoutTxnDetails().getTransferDetails().getReceiveAmount().setValue(receiveAmount.getValue());
+        payoutRequest.getPayoutTxnDetails().getTransferDetails().getReceiveAmount().setCurrencyCode(receiveAmount.getCurrencycode());
+        payoutRequest.getPayoutTxnDetails().setPurpose(payoutTxnDetails.getPurpose());
+
+        if(apiToInvoke.equals("REMIT")) {
+            System.out.println("retrying REMIT API for PSP1 partner");
+            partnerAPICalls.commitPaymentAPI(payoutRequest);
+        }
+        else if (apiToInvoke.equals("STATUS")) {
+            System.out.println("retrying STATUS API for PSP1 partner");
+            partnerAPICalls.statusPaymentAPI(payoutRequest);
+        }
+        else {
+            System.out.println("Invalid api to invoke");
+        }
     }
 }

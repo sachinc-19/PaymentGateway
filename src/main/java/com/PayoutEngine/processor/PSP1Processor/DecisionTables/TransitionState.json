@@ -2,7 +2,7 @@
   "rules": [
     {
       "service": "REMIT",
-      "partnerStatus": 200,
+      "partnerStatus": "0",
       "partnerSubStatus": "1000",
       "actions": {
         "transitionName": "PAYOUT_ACKNOWLEDGED",
@@ -13,7 +13,7 @@
     },
     {
       "service": "STATUS",
-      "partnerStatus": 200,
+      "partnerStatus": "0",
       "partnerSubStatus": "1001",
       "actions": {
         "transitionName": "DELIVERED",

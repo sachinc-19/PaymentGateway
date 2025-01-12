@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-@Component("DIGIT9")
+@Component("PSP2")
 public class PSP2 implements PaymentServiceProvider {
     @Autowired
     ErrorHandler errorHandler = new ErrorHandler();
     @Override
     public boolean certifyInput(PayoutRequest payoutRequest) {
-        System.out.println("calling certifyInput from DIGIT9");
+        System.out.println("calling certifyInput from PSP2");
 
         // Example validations
         if (payoutRequest.getPayoutTxnDetails().getPartnerDetails().getAccountNumber() == null || payoutRequest.getPayoutTxnDetails().getPartnerDetails().getAccountNumber().isEmpty()) {
@@ -37,7 +37,12 @@ public class PSP2 implements PaymentServiceProvider {
 
     @Override
     public boolean certifyInputWithPartner(PayoutRequest payoutRequest) {
-        System.out.println("calling certifyInputWithPartner from DIGIT9");
+        System.out.println("calling certifyInputWithPartner from PSP2");
         return true;
+    }
+
+    @Override
+    public void retryPartnerApi(String payoutId, String apiToInvoke) {
+        System.out.println("retrying " + apiToInvoke + " API for PSP2 partner");
     }
 }
