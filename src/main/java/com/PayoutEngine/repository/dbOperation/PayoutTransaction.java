@@ -15,7 +15,6 @@ public class PayoutTransaction {
     public void save(PayoutRequest payoutRequest) {
         PayoutTxn payoutTxn = new PayoutTxn();
         payoutTxn.setPayoutid("220");
-        payoutTxn.setCorrelationid("123456");
         System.out.println("inside payoutxn save");
         // Set payoutTxn db object with payoutTransaction data(code) object
         payoutTxnRepositoryDao.save(payoutTxn);

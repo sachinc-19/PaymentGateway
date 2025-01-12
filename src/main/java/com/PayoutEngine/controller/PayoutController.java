@@ -42,4 +42,25 @@ public class PayoutController { // Handles incoming requests and interacts with 
             throw new RuntimeException(ex); // wrap and propagate
         }
     }
+
+    @PostMapping("/status")
+    public ResponseEntity<PayoutResponse> getTransactionStatus(@RequestBody @Valid PayoutRequest payoutRequest) throws JsonProcessingException {
+        try {
+            System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(payoutRequest));
+
+            // Send request to asynchronous service for background processing
+//            payoutService.processPayoutAsync(payoutRequest);
+
+            // Return a response indicating the transaction is being processed
+            PayoutResponse payoutResponse = new PayoutResponse("Success", 200, "DELIVERED");
+
+            return new ResponseEntity<PayoutResponse>(payoutResponse , HttpStatus.ACCEPTED);
+        }
+        catch (ApplicationException ex) {
+            throw ex;
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex); // wrap and propagate
+        }
+    }
 }

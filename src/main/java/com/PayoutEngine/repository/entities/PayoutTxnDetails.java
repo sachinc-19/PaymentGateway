@@ -19,8 +19,6 @@ public class PayoutTxnDetails {
 
     @Id
     private String payoutid;
-    private String correlationid;
-    private String mtcn;
     private String channel;
     private String partnername;
     private String partnerreference;

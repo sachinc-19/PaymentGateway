@@ -21,12 +21,10 @@ public class UserService {
             // fetch the password stored in db against this username
             User user = userRepository.findByUsername(username);
 
-            if (user != null) {
-                // Compare the provided password with the stored hash
-                if(!passwordService.checkPassword(plainPassword, user.getPassword())) {
-                    System.out.println("User authentication Unsuccessfull");
-                    throw new ServiceException("Unauthorized Access" , 401);
-                }
+            // Compare the provided password with the stored hash
+            if(!passwordService.checkPassword(plainPassword, user.getPassword())) {
+                System.out.println("User authentication Unsuccessfull");
+                throw new ServiceException("Unauthorized Access" , 401);
             }
 
             System.out.println("User authentication successfull");

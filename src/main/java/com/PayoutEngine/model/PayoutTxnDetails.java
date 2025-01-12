@@ -2,16 +2,17 @@ package com.PayoutEngine.model;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PayoutTxnDetails {
     private String payoutId;
-    @NotBlank(message = "Please provide a correlationID")
-    private String correlationId;
-    private String mtcn;
     private String channel;
     @Valid
     private TransferDetails transferDetails;

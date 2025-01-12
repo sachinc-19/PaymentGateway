@@ -29,8 +29,6 @@ public class SetDbObjects {
         PayoutTxn payoutTxn = new PayoutTxn();
 
         payoutTxn.setPayoutid(payoutRequest.getPayoutTxnDetails().getPayoutId());
-        payoutTxn.setCorrelationid(payoutRequest.getPayoutTxnDetails().getCorrelationId());
-        payoutTxn.setMtcn(payoutRequest.getPayoutTxnDetails().getMtcn());
         payoutTxn.setChannel(payoutRequest.getPayoutTxnDetails().getChannel());
         payoutTxn.setState("PAYOUT");
         payoutTxn.setSubstate("INITIATED");
@@ -47,8 +45,6 @@ public class SetDbObjects {
         PayoutTxnDetails payoutTxnDetails = new PayoutTxnDetails();
 
         payoutTxnDetails.setPayoutid(payoutRequest.getPayoutTxnDetails().getPayoutId());
-        payoutTxnDetails.setCorrelationid(payoutRequest.getPayoutTxnDetails().getCorrelationId());
-        payoutTxnDetails.setMtcn(payoutRequest.getPayoutTxnDetails().getMtcn());
         payoutTxnDetails.setChannel(payoutRequest.getPayoutTxnDetails().getChannel());
         payoutTxnDetails.setPartnername(payoutRequest.getPayoutTxnDetails().getPartnerDetails().getPartnerName());
         payoutTxnDetails.setPartnerreference("");
@@ -80,22 +76,31 @@ public class SetDbObjects {
         System.out.println("Saving partnerDetails Object in DB");
         partnerDetailsRepository.save(partnerDetails);
 
-        Amount amount = new Amount();
+        Amount sendAmount = new Amount();
 
-        AmountId amountId = new AmountId(payoutRequest.getPayoutTxnDetails().getPayoutId(), "SEND");
-        amount.setAmountId(amountId);
+        AmountId sendAmountId = new AmountId(payoutRequest.getPayoutTxnDetails().getPayoutId(), "SEND");
+        sendAmount.setAmountId(sendAmountId);
 
-        amount.setPayoutTxnDetails(payoutTxnDetails);
-        amount.setCurrencycode(payoutRequest.getPayoutTxnDetails().getTransferDetails().getSendAmount().getCurrencyCode());
-        amount.setValue(payoutRequest.getPayoutTxnDetails().getTransferDetails().getSendAmount().getValue());
+        sendAmount.setPayoutTxnDetails(payoutTxnDetails);
+        sendAmount.setCurrencycode(payoutRequest.getPayoutTxnDetails().getTransferDetails().getSendAmount().getCurrencyCode());
+        sendAmount.setValue(payoutRequest.getPayoutTxnDetails().getTransferDetails().getSendAmount().getValue());AmountId amountId = new AmountId(payoutRequest.getPayoutTxnDetails().getPayoutId(), "SEND");
+        sendAmount.setModifiedon(LocalDateTime.now());
+        amountRepository.save(sendAmount);
+        System.out.println("Saving Send Amount Object in DB");
+
+        Amount receiveAmount = new Amount();
+        AmountId receiveAmountId = new AmountId(payoutRequest.getPayoutTxnDetails().getPayoutId(), "RECEIVE");
+        receiveAmount.setAmountId(receiveAmountId);
+
+        receiveAmount.setPayoutTxnDetails(payoutTxnDetails);
+        receiveAmount.setCurrencycode(payoutRequest.getPayoutTxnDetails().getTransferDetails().getReceiveAmount().getCurrencyCode());
+        receiveAmount.setValue(payoutRequest.getPayoutTxnDetails().getTransferDetails().getReceiveAmount().getValue());
+        receiveAmount.setModifiedon(LocalDateTime.now());
         // VALUEMULTIPLIER
         // FXRATE
         // FXRATEMULTIPLIER
-        amount.setModifiedon(LocalDateTime.now());
 
-        System.out.println("Saving amount Object in DB");
-
-        amountRepository.save(amount);
-
+        System.out.println("Saving receive Amount Object in DB");
+        amountRepository.save(receiveAmount);
     }
 }
