@@ -1,4 +1,4 @@
-FROM 3.9.9-eclipse-temurin-23 AS build
+FROM maven:3.9.9-amazoncorretto-8-al2023 AS build
 COPY . .
 RUN mvn clean package -DskipTests
 
