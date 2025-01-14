@@ -2,8 +2,8 @@ package com.PayoutEngine.utilityServices;
 
 import com.PayoutEngine.engine.PSPFactory;
 import com.PayoutEngine.processor.PaymentServiceProvider;
-import com.PayoutEngine.repository.dao.PayoutTimerScheduledRepository;
-import com.PayoutEngine.repository.entities.PayoutTimerScheduled;
+import com.PayoutEngine.repository.dao.PaymentProcessingScheduledRepository;
+import com.PayoutEngine.repository.entities.PaymentProcessingScheduled;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class SchedulerJob {
     @Autowired
     private PSPFactory pspFactory;
     @Autowired
-    PayoutTimerScheduledRepository payoutTimerScheduledRepository;
+    PaymentProcessingScheduledRepository paymentProcessingScheduledRepository;
     private static final Logger log = LoggerFactory.getLogger(SchedulerJob.class);
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -30,21 +30,21 @@ public class SchedulerJob {
     @Transactional
     @Scheduled(fixedRate = 60000, initialDelay = 1000)
     public void PayoutTimerRun() throws JSONException {
-        payoutTimerScheduledRepository.changePayoutTimerStatusToProcessing();
+        paymentProcessingScheduledRepository.changePayoutTimerStatusToProcessing();
         log.info("The time is now {}", dateFormat.format(new Date()));
 
-        List<PayoutTimerScheduled> timers = payoutTimerScheduledRepository.findByStatus("PROCESSING");
-        payoutTimerScheduledRepository.deleteByStatus("PROCESSING");
+        List<PaymentProcessingScheduled> timers = paymentProcessingScheduledRepository.findByStatus("PROCESSING");
+        paymentProcessingScheduledRepository.deleteByStatus("PROCESSING");
 
-        for(PayoutTimerScheduled t : timers) {
-            String timerName = t.getTimername();
+        for(PaymentProcessingScheduled t : timers) {
+            String paymentId = t.getPaymentid();
             String partnerName = t.getPartner();
             String apiName = t.getApiname();
-            System.out.println("timerName: " + timerName + ", partnerName: " + partnerName + ", apiName: " + apiName);
+            System.out.println("paymentId: " + paymentId + ", partnerName: " + partnerName + ", apiName: " + apiName);
 
             PaymentServiceProvider selectedPsp = pspFactory.getPSP(partnerName);
-            System.out.println("Picking up the timerName [" + timerName + "] for processing");
-            selectedPsp.retryPartnerApi(timerName, apiName);
+            System.out.println("Picking up the paymentId [" + paymentId + "] for processing");
+            selectedPsp.retryPartnerApi(paymentId, apiName);
         }
     }
 }

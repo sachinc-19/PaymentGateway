@@ -7,18 +7,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
-@Table(name = "payouttxndetails")
+@Table(name = "paymenttransactiondetails")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class PayoutTxnDetails {
+public class PaymentTransactionDetails {
 
     @Id
-    private String payoutid;
+    private String paymentid;
     private String channel;
     private String partnername;
     private String partnerreference;

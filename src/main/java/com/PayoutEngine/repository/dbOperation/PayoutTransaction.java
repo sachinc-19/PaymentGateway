@@ -1,8 +1,8 @@
 package com.PayoutEngine.repository.dbOperation;
 
 import com.PayoutEngine.model.PayoutRequest;
-import com.PayoutEngine.repository.dao.PayoutTxnRepository;
-import com.PayoutEngine.repository.entities.PayoutTxn;
+import com.PayoutEngine.repository.dao.PaymentTransactionRepository;
+import com.PayoutEngine.repository.entities.PaymentTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -10,13 +10,13 @@ import org.springframework.stereotype.Repository;
 public class PayoutTransaction {
 
     @Autowired
-    private PayoutTxnRepository payoutTxnRepositoryDao;
+    private PaymentTransactionRepository paymentTransactionRepositoryDao;
 
     public void save(PayoutRequest payoutRequest) {
-        PayoutTxn payoutTxn = new PayoutTxn();
-        payoutTxn.setPayoutid("220");
+        PaymentTransaction paymentTransaction = new PaymentTransaction();
+        paymentTransaction.setPaymentid("220");
         System.out.println("inside payoutxn save");
-        // Set payoutTxn db object with payoutTransaction data(code) object
-        payoutTxnRepositoryDao.save(payoutTxn);
+        // Set paymentTransaction db object with payoutTransaction data(code) object
+        paymentTransactionRepositoryDao.save(paymentTransaction);
     }
 }

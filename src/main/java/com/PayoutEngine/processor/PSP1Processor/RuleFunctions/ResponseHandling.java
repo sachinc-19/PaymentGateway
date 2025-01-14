@@ -45,7 +45,7 @@ public class ResponseHandling {
     public void actionOnValidateResponse() {
     }
 
-    public void actionOnServiceResponse(String payoutId, String apiName, ApiResponse apiResponse) throws JSONException {
+    public void actionOnServiceResponse(String paymentId, String apiName, ApiResponse apiResponse) throws JSONException {
         System.out.println("-----------------Inside ResponseHandling actionOnServiceResponse PSP1-----------------");
         //        JSONObject responseObj = new JSONObject(String.valueOf(response));
         String responseCode = apiResponse.getStatusCode();
@@ -72,11 +72,11 @@ public class ResponseHandling {
         String transitionName = (String) actions.get("transitionName");
         String description = (String) actions.get("partnerStatusDescription");
         System.out.println("transitionName: " + transitionName + ", description: " + description);
-        updateDbObjects.updatePayoutTxn(payoutId, "PAYOUT", transitionName, responseCode+" | "+subResponseCode, description);
-        checkForRetry(payoutId, apiName, responseCode, subResponseCode);
+        updateDbObjects.updatePayoutTxn(paymentId, "PAYOUT", transitionName, responseCode+" | "+subResponseCode, description);
+        checkForRetry(paymentId, apiName, responseCode, subResponseCode);
     }
 
-    public void checkForRetry(String payoutId, String apiName, String responseCode , String subResponseCode) {
+    public void checkForRetry(String paymentId, String apiName, String responseCode , String subResponseCode) {
         System.out.println("api: " + apiName + ", responseCode: " + responseCode + ", subResponseCode: " + subResponseCode);
         // Get the rules array
         List<Map<String, Object>> rules = (List<Map<String, Object>>) retryConfig.get("rules");
@@ -104,7 +104,7 @@ public class ResponseHandling {
             Integer retryIntervalInMins = (Integer) actions.get("retryIntervalInMin");
             String apiToCall = (String) actions.get("apiToCall");
 
-            createPayoutTimer.upsertTimerInDb(payoutId, LocalDateTime.now(), retryIntervalInMins, "INCREMENT",
+            createPayoutTimer.upsertTimerInDb(paymentId, LocalDateTime.now(), retryIntervalInMins, "INCREMENT",
                     "NEW", "PSP1", apiToCall);
         }
     }

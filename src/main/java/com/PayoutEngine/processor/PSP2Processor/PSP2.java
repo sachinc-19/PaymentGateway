@@ -1,13 +1,10 @@
 package com.PayoutEngine.processor.PSP2Processor;
 
-import com.PayoutEngine.exceptions.customExceptions.ProcessorException;
 import com.PayoutEngine.model.ErrorHandler;
 import com.PayoutEngine.model.PayoutRequest;
 import com.PayoutEngine.processor.PaymentServiceProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
 
 @Component("PSP2")
 public class PSP2 implements PaymentServiceProvider {
@@ -18,15 +15,15 @@ public class PSP2 implements PaymentServiceProvider {
         System.out.println("calling certifyInput from PSP2");
 
         // Example validations
-        if (payoutRequest.getPayoutTxnDetails().getPartnerDetails().getAccountNumber() == null || payoutRequest.getPayoutTxnDetails().getPartnerDetails().getAccountNumber().isEmpty()) {
+        if (payoutRequest.getPaymentDetails().getPspDetails().getAccountNumber() == null || payoutRequest.getPaymentDetails().getPspDetails().getAccountNumber().isEmpty()) {
             errorHandler.addError("accountNumber", "Account number cannot be empty");
         }
 
-        if (payoutRequest.getPayoutTxnDetails().getPartnerDetails().getBankCode() == null || payoutRequest.getPayoutTxnDetails().getPartnerDetails().getBankCode().isEmpty()) {
+        if (payoutRequest.getPaymentDetails().getPspDetails().getBankCode() == null || payoutRequest.getPaymentDetails().getPspDetails().getBankCode().isEmpty()) {
             errorHandler.addError("bankCode", "Bank code is required");
         }
 
-        if (payoutRequest.getPayoutTxnDetails().getTransferDetails().getReceiveAmount().getValue() <= 0) {
+        if (payoutRequest.getPaymentDetails().getTransferDetails().getReceiveAmount().getValue() <= 0) {
             errorHandler.addError("amount", "Amount must be greater than zero");
         }
 
@@ -42,7 +39,7 @@ public class PSP2 implements PaymentServiceProvider {
     }
 
     @Override
-    public void retryPartnerApi(String payoutId, String apiToInvoke) {
+    public void retryPartnerApi(String paymentId, String apiToInvoke) {
         System.out.println("retrying " + apiToInvoke + " API for PSP2 partner");
     }
 }

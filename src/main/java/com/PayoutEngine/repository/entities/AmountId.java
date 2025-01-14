@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Embeddable
 public class AmountId implements Serializable {
 
-    private String payoutid;
+    private String paymentid;
 
     private String amounttype;
 

@@ -48,11 +48,11 @@ public class RoutingEngine {
     public PaymentServiceProvider getBestPspForTransaction(PayoutRequest payoutRequest) throws RoutingException {
         KieSession kieSession = kieContainer.newKieSession();
 
-        PSPRouting pspRouting = new PSPRouting(payoutRequest.getPayoutTxnDetails().getTransferDetails().getSendCountryCode(),
-                payoutRequest.getPayoutTxnDetails().getTransferDetails().getReceiveCountryCode(),
-                    payoutRequest.getPayoutTxnDetails().getTransferDetails().getReceiveAmount().getCurrencyCode(),
-                        payoutRequest.getPayoutTxnDetails().getPaymentMethod(),
-                            payoutRequest.getPayoutTxnDetails().getTransferDetails().getReceiveAmount().getValue(), null);
+        PSPRouting pspRouting = new PSPRouting(payoutRequest.getPaymentDetails().getTransferDetails().getSendCountryCode(),
+                payoutRequest.getPaymentDetails().getTransferDetails().getReceiveCountryCode(),
+                    payoutRequest.getPaymentDetails().getTransferDetails().getReceiveAmount().getCurrencyCode(),
+                        payoutRequest.getPaymentDetails().getPaymentMethod(),
+                            payoutRequest.getPaymentDetails().getTransferDetails().getReceiveAmount().getValue(), null);
 
         kieSession.insert(pspRouting);
         kieSession.fireAllRules();
@@ -60,7 +60,7 @@ public class RoutingEngine {
         String partner = pspRouting.getPartner();
         System.out.println("partner selected after rule fire: " + partner);
         // UPDATE PSP NAME IN REQUEST
-        payoutRequest.getPayoutTxnDetails().getPartnerDetails().setPartnerName(partner);
+        payoutRequest.getPaymentDetails().getPspDetails().setPartnerName(partner);
 
         return pspFactory.getPSP(partner);
     }

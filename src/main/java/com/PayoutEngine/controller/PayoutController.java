@@ -1,10 +1,7 @@
 package com.PayoutEngine.controller;
 import com.PayoutEngine.exceptions.customExceptions.ApplicationException;
-import com.PayoutEngine.exceptions.customExceptions.PaymentRequiredException;
-import com.PayoutEngine.exceptions.customExceptions.ServiceException;
 import com.PayoutEngine.model.PayoutRequest;
 import com.PayoutEngine.model.PayoutResponse;
-import com.PayoutEngine.model.PayoutTxnDetails;
 import com.PayoutEngine.service.PayoutService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

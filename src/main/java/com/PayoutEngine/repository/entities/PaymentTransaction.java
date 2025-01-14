@@ -10,14 +10,14 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "payouttxn")
+@Table(name = "paymenttransaction")
 @Getter
 @Setter
 @NoArgsConstructor
-public class PayoutTxn {
+public class PaymentTransaction {
 
     @Id
-    private String payoutid;
+    private String paymentid;
     private String channel;
     private String state;
     private String substate;

@@ -9,13 +9,13 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "partnerdetails")
+@Table(name = "pspdetails")
 @Getter
 @Setter
-public class PartnerDetails {
+public class PspDetails {
 
     @Id
-    private String payoutid;
+    private String paymentid;
     private String accountnumber;
     private String partnerid;
     private String partnername;
@@ -25,6 +25,6 @@ public class PartnerDetails {
     private String beneficiaryname;
     private LocalDateTime modifiedon;
 
-    public PartnerDetails() {
+    public PspDetails() {
     }
 }

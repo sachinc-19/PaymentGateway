@@ -17,9 +17,9 @@ public class Amount {
     private AmountId amountId;
 
     @ManyToOne
-    @MapsId("payoutid")
-    @JoinColumn(name = "payoutid", referencedColumnName = "payoutid")
-    private PayoutTxnDetails payoutTxnDetails;
+    @MapsId("paymentid")
+    @JoinColumn(name = "paymentid", referencedColumnName = "paymentid")
+    private PaymentTransactionDetails paymentTransactionDetails;
 
     private String currencycode;
     private Double value;

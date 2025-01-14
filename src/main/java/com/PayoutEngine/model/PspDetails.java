@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PartnerDetails {
+public class PspDetails {
 
     @NotBlank(message = "Please provide a accountNumber")
     private String accountNumber;

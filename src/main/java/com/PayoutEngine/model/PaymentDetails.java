@@ -11,14 +11,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PayoutTxnDetails {
-    private String payoutId;
+public class PaymentDetails {
+    private String paymentId;
     private String channel;
     @Valid
     private TransferDetails transferDetails;
     private String purpose;
     @Valid
-    private PartnerDetails partnerDetails;
+    private PspDetails pspDetails;
     @NotBlank(message = "Please provide a paymentMethod")
     private String paymentMethod;
 }

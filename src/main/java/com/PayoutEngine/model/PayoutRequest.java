@@ -2,7 +2,6 @@ package com.PayoutEngine.model;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +18,6 @@ public class PayoutRequest {
     @NotBlank(message = "Please provide operation name")
     private String operation;
     @Valid
-    private PayoutTxnDetails payoutTxnDetails;
+    private PaymentDetails paymentDetails;
 
 }

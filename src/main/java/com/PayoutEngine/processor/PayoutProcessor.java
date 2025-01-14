@@ -36,10 +36,10 @@ public class PayoutProcessor {
             }
 
             // step 3: Create the remit timer in db
-            String timerName = payoutRequest.getPayoutTxnDetails().getPayoutId();
+            String paymentId = payoutRequest.getPaymentDetails().getPaymentId();
 
-            createPayoutTimer.upsertTimerInDb(timerName, LocalDateTime.now(), 1, "INCREMENT",
-                    "NEW", payoutRequest.getPayoutTxnDetails().getPartnerDetails().getPartnerName(), "REMIT");
+            createPayoutTimer.upsertTimerInDb(paymentId, LocalDateTime.now(), 1, "INCREMENT",
+                    "NEW", payoutRequest.getPaymentDetails().getPspDetails().getPartnerName(), "REMIT");
 
             // Step 4: Update transaction status in the database (if applicable)
             updateTransactionStatus(payoutRequest);
@@ -53,7 +53,7 @@ public class PayoutProcessor {
 
     private boolean processExternalPayout(PayoutRequest payoutRequest) {
         // Simulate external payment processing logic
-        System.out.println("Processing payout to receiver: " + payoutRequest.getPayoutTxnDetails().getPartnerDetails().getBeneficiaryName() + ", having bank account number:" + payoutRequest.getPayoutTxnDetails().getPartnerDetails().getAccountNumber());
+        System.out.println("Processing payout to receiver: " + payoutRequest.getPaymentDetails().getPspDetails().getBeneficiaryName() + ", having bank account number:" + payoutRequest.getPaymentDetails().getPspDetails().getAccountNumber());
         // For now, we'll assume it's always successful
         return true;
     }
@@ -61,8 +61,8 @@ public class PayoutProcessor {
     private void updateTransactionStatus(PayoutRequest payoutRequest) {
         // Simulate transaction status update (e.g., in a database)
         try {
-            updateDbObjects.updatePayoutTxn(payoutRequest.getPayoutTxnDetails().getPayoutId(), "PAYOUT", "QUEUED_FOR_PARTNER", "Unpaid", "Transaction is queued for processing");
-            System.out.println("Processing payout to receiver: " + payoutRequest.getPayoutTxnDetails().getPartnerDetails().getBeneficiaryName() + ", having bank account number:" + payoutRequest.getPayoutTxnDetails().getPartnerDetails().getAccountNumber());
+            updateDbObjects.updatePayoutTxn(payoutRequest.getPaymentDetails().getPaymentId(), "PAYOUT", "QUEUED_FOR_PARTNER", "Unpaid", "Transaction is queued for processing");
+            System.out.println("Processing payout to receiver: " + payoutRequest.getPaymentDetails().getPspDetails().getBeneficiaryName() + ", having bank account number:" + payoutRequest.getPaymentDetails().getPspDetails().getAccountNumber());
 
         } catch (Exception e) {
             throw new RuntimeException(e);

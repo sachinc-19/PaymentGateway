@@ -1,27 +1,25 @@
 package com.PayoutEngine.repository.dbOperation;
 
-import com.PayoutEngine.repository.dao.PayoutTxnRepository;
-import com.PayoutEngine.repository.entities.PayoutTxn;
+import com.PayoutEngine.repository.dao.PaymentTransactionRepository;
+import com.PayoutEngine.repository.entities.PaymentTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 public class UpdateDbObjects {
     @Autowired
-    private PayoutTxnRepository payoutTxnRepository;
+    private PaymentTransactionRepository paymentTransactionRepository;
 
-    public void updatePayoutTxn(String payoutId, String state, String subState, String status, String description) {
-//        Optional<PayoutTxn> payoutTxn = payoutTxnRepository.findById(payoutId);
-        PayoutTxn payoutTxn = payoutTxnRepository.findById(payoutId).orElse(null);
+    public void updatePayoutTxn(String paymentId, String state, String subState, String status, String description) {
+//        Optional<PaymentTransaction> paymentTransaction = paymentTransactionRepository.findById(paymentId);
+        PaymentTransaction paymentTransaction = paymentTransactionRepository.findById(paymentId).orElse(null);
         System.out.println("updating payout Transaction Table");
-        if(payoutTxn != null) {
-            payoutTxn.setState(state);
-            payoutTxn.setSubstate(subState);
-            payoutTxn.setStatus(status);
-            payoutTxn.setDescription(description);
-            payoutTxnRepository.save(payoutTxn);
+        if(paymentTransaction != null) {
+            paymentTransaction.setState(state);
+            paymentTransaction.setSubstate(subState);
+            paymentTransaction.setStatus(status);
+            paymentTransaction.setDescription(description);
+            paymentTransactionRepository.save(paymentTransaction);
             System.out.println("updating payout Transaction Table");
         }
     }

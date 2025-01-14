@@ -1,34 +1,33 @@
 package com.PayoutEngine.utilityServices;
 
-import com.PayoutEngine.repository.dao.PayoutTimerScheduledRepository;
-import com.PayoutEngine.repository.entities.PayoutTimerScheduled;
+import com.PayoutEngine.repository.dao.PaymentProcessingScheduledRepository;
+import com.PayoutEngine.repository.entities.PaymentProcessingScheduled;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 @Service
 public class CreatePayoutTimer {
     @Autowired
-    PayoutTimerScheduledRepository payoutTimerScheduledRepository;
+    PaymentProcessingScheduledRepository paymentProcessingScheduledRepository;
 
-    public void upsertTimerInDb(String timerName, LocalDateTime creationTime, Integer intervalInMins,
+    public void upsertTimerInDb(String paymentId, LocalDateTime creationTime, Integer intervalInMins,
                                     String timerData, String status, String partner, String apiName) {
 
-        PayoutTimerScheduled payoutTimerScheduled = new PayoutTimerScheduled();
-        payoutTimerScheduled.setTimername(timerName);
-        payoutTimerScheduled.setCreationtime(creationTime);
+        PaymentProcessingScheduled paymentProcessingScheduled = new PaymentProcessingScheduled();
+        paymentProcessingScheduled.setPaymentid(paymentId);
+        paymentProcessingScheduled.setCreationtime(creationTime);
 
         LocalDateTime scheduleTime = creationTime.plusMinutes(intervalInMins);
-        payoutTimerScheduled.setScheduletime(scheduleTime);
+        paymentProcessingScheduled.setScheduletime(scheduleTime);
 
-        payoutTimerScheduled.setTimerdata(timerData);
-        payoutTimerScheduled.setStatus(status);
-        payoutTimerScheduled.setPartner(partner);
-        payoutTimerScheduled.setApiname(apiName);
+        paymentProcessingScheduled.setTimerdata(timerData);
+        paymentProcessingScheduled.setStatus(status);
+        paymentProcessingScheduled.setPartner(partner);
+        paymentProcessingScheduled.setApiname(apiName);
 
         System.out.println("Scheduling [" + apiName + "] timer for [" + partner + "] partner at time [" + scheduleTime + "]");
 
-        payoutTimerScheduledRepository.save(payoutTimerScheduled);
+        paymentProcessingScheduledRepository.save(paymentProcessingScheduled);
     }
 }

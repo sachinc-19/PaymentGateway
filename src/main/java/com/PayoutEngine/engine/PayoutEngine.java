@@ -1,7 +1,5 @@
 package com.PayoutEngine.engine;
 import com.PayoutEngine.exceptions.customExceptions.ApplicationException;
-import com.PayoutEngine.exceptions.customExceptions.EngineException;
-import com.PayoutEngine.exceptions.customExceptions.ProcessorException;
 import com.PayoutEngine.model.PayoutRequest;
 import com.PayoutEngine.processor.PaymentServiceProvider;
 import com.PayoutEngine.processor.PayoutProcessor;
@@ -40,7 +38,7 @@ public class PayoutEngine {
 
     private void validateCommonFields(PayoutRequest payoutRequest) {
         // Perform common validation logic for international transfers
-        if (payoutRequest.getPayoutTxnDetails().getPartnerDetails().getAccountNumber() == null || payoutRequest.getPayoutTxnDetails().getPartnerDetails().getAccountNumber().isEmpty()) {
+        if (payoutRequest.getPaymentDetails().getPspDetails().getAccountNumber() == null || payoutRequest.getPaymentDetails().getPspDetails().getAccountNumber().isEmpty()) {
             throw new ValidationException("Invalid account number");
         }
         // Other field validations
