@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com</groupId>
-	<artifactId>PayoutEngine</artifactId>
+	<artifactId>PaymentEngine</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>PayoutEngine</name>
+	<name>PaymentEngine</name>
 	<description>Moving Money</description>
 	<url/>
 	<licenses>
