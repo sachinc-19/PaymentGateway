@@ -11,7 +11,7 @@ import java.util.List;
 public interface PaymentProcessingScheduledRepository extends JpaRepository<PaymentProcessingScheduled, String> {
 
     // change the timer status from NEW to PROCESSING based on partner throttling
-    @Procedure("PRC_PAYOUTTIMER_THROTTLE")
+    @Procedure("PAYMENT_PROCESSING_THROTTLE")
     public void changePayoutTimerStatusToProcessing();
 
     public List<PaymentProcessingScheduled> findByStatus(String status);

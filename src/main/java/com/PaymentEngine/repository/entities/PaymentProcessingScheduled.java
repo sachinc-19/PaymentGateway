@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@NamedStoredProcedureQueries({ @NamedStoredProcedureQuery(name = "payoutTimersThrottle", procedureName = "PRC_PAYOUTTIMER_THROTTLE") })
+@NamedStoredProcedureQueries({ @NamedStoredProcedureQuery(name = "paymentProcessingThrottle", procedureName = "PAYMENT_PROCESSING_THROTTLE") })
 public class PaymentProcessingScheduled {
     @Id
     private String paymentid;
