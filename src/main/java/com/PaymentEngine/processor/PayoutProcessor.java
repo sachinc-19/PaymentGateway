@@ -2,7 +2,7 @@ package com.PaymentEngine.processor;
 import com.PaymentEngine.exceptions.customExceptions.ApplicationException;
 import com.PaymentEngine.model.ErrorHandler;
 import com.PaymentEngine.model.PaymentRequest;
-import com.PaymentEngine.processor.PSP1Processor.RuleFunctions.PartnerAPICalls;
+import com.PaymentEngine.processor.PSP1Processor.PspHandler.PartnerAPICalls;
 import com.PaymentEngine.repository.dbOperation.UpdateDbObjects;
 import com.PaymentEngine.utilityServices.CreatePayoutTimer;
 import org.springframework.beans.factory.annotation.Autowired;

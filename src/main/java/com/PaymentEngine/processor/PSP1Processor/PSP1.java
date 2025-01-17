@@ -1,7 +1,7 @@
 package com.PaymentEngine.processor.PSP1Processor;
 
 import com.PaymentEngine.model.PaymentRequest;
-import com.PaymentEngine.processor.PSP1Processor.RuleFunctions.PartnerAPICalls;
+import com.PaymentEngine.processor.PSP1Processor.PspHandler.PartnerAPICalls;
 import com.PaymentEngine.processor.PaymentServiceProvider;
 import com.PaymentEngine.repository.dao.AmountRepository;
 import com.PaymentEngine.repository.dao.PspDetailsRepository;

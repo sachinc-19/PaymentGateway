@@ -1,4 +1,4 @@
-package com.PaymentEngine.processor.PSP1Processor.RuleFunctions;
+package com.PaymentEngine.processor.PSP1Processor.PspHandler;
 
 import com.PaymentEngine.processor.PSP1Processor.model.ApiResponse;
 import com.PaymentEngine.repository.dbOperation.UpdateDbObjects;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Service
 public class ResponseHandling {
-    private Map<String, Object> retryConfig;
+    private Map<String, Object> apiRetryConfig;
     private Map<String, Object> stateChangeConfig;
     @Autowired
     private UpdateDbObjects updateDbObjects;
@@ -28,11 +28,11 @@ public class ResponseHandling {
         // Load decision tables from JSON/YAML files
         ObjectMapper mapper = new ObjectMapper();
         try {
-            File file = new File("src/main/java/com/PaymentEngine/processor/PSP1Processor/DecisionTables/APIResponseCodes.json");
+            File file = new File("src/main/java/com/PaymentEngine/processor/PSP1Processor/DecisionRules/APIResponseCodes.json");
             // Convert JSON string to Map
             Map<String, Object> config = mapper.readValue(file, Map.class);
-            this.retryConfig = config;
-            file = new File("src/main/java/com/PaymentEngine/processor/PSP1Processor/DecisionTables/TransitionState.json");
+            this.apiRetryConfig = config;
+            file = new File("src/main/java/com/PaymentEngine/processor/PSP1Processor/DecisionRules/TransitionState.json");
             config = mapper.readValue(file, Map.class);
             this.stateChangeConfig = config;
 
@@ -78,7 +78,7 @@ public class ResponseHandling {
     public void checkForRetry(String paymentId, String apiName, String responseCode , String subResponseCode) {
         System.out.println("api: " + apiName + ", responseCode: " + responseCode + ", subResponseCode: " + subResponseCode);
         // Get the rules array
-        List<Map<String, Object>> rules = (List<Map<String, Object>>) retryConfig.get("rules");
+        List<Map<String, Object>> rules = (List<Map<String, Object>>) apiRetryConfig.get("rules");
 
         Map<String, Object> actions = null;
         // Loop through each rule and access its properties

@@ -1,4 +1,4 @@
-package com.PaymentEngine.processor.PSP1Processor.RuleFunctions;
+package com.PaymentEngine.processor.PSP1Processor.PspHandler;
 
 import com.PaymentEngine.model.PaymentRequest;
 import com.PaymentEngine.processor.PSP1Processor.model.ApiResponse;
