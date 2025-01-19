@@ -36,6 +36,24 @@ public class ResponseHandling {
             config = mapper.readValue(file, Map.class);
             this.stateChangeConfig = config;
 
+            List<Map<String, Object>> rules = (List<Map<String, Object>>) stateChangeConfig.get("rules");
+            String apiName = "REMIT";
+            String responseCode = "0";
+            String subResponseCode = "1000";
+            Map<String, Object> actions = null;
+            // Loop through each rule and access its properties
+            for (Map<String, Object> rule : rules) {
+                if (rule.get("service").equals(apiName) &&
+                        rule.get("partnerStatus").equals(responseCode) &&
+                        rule.get("partnerSubStatus").equals(subResponseCode)) {
+                    // Access the actions object within each rule
+                    actions = (Map<String, Object>) rule.get("actions");
+                    System.out.println("transitionName: " + actions.get("transitionName"));
+                    System.out.println("partnerStatusDescription: " + actions.get("partnerStatusDescription"));
+                    System.out.println("----");
+                }
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
