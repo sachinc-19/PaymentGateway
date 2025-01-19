@@ -1,5 +1,6 @@
 package com.PaymentEngine.processor.PSP1Processor.PspHandler;
 
+import aj.org.objectweb.asm.TypeReference;
 import com.PaymentEngine.processor.PSP1Processor.model.ApiResponse;
 import com.PaymentEngine.repository.dbOperation.UpdateDbObjects;
 import com.PaymentEngine.utilityServices.CreatePayoutTimer;
@@ -8,8 +9,8 @@ import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -25,34 +26,16 @@ public class ResponseHandling {
 
     public ResponseHandling() {
         System.out.println("hello");
-        // Load decision tables from JSON/YAML files
-        ObjectMapper mapper = new ObjectMapper();
+        // Load decision Rules from JSON files
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            File file = new File("src/main/java/com/PaymentEngine/processor/PSP1Processor/DecisionRules/APIResponseCodes.json");
-            // Convert JSON string to Map
-            Map<String, Object> config = mapper.readValue(file, Map.class);
+            InputStream inputStream = TypeReference.class.getResourceAsStream("/DecisionRules/ApiResponseCodes.json");
+            Map<String,Object> config = objectMapper.readValue(inputStream, Map.class);
             this.apiRetryConfig = config;
-            file = new File("src/main/java/com/PaymentEngine/processor/PSP1Processor/DecisionRules/TransitionState.json");
-            config = mapper.readValue(file, Map.class);
-            this.stateChangeConfig = config;
 
-            List<Map<String, Object>> rules = (List<Map<String, Object>>) stateChangeConfig.get("rules");
-            String apiName = "REMIT";
-            String responseCode = "0";
-            String subResponseCode = "1000";
-            Map<String, Object> actions = null;
-            // Loop through each rule and access its properties
-            for (Map<String, Object> rule : rules) {
-                if (rule.get("service").equals(apiName) &&
-                        rule.get("partnerStatus").equals(responseCode) &&
-                        rule.get("partnerSubStatus").equals(subResponseCode)) {
-                    // Access the actions object within each rule
-                    actions = (Map<String, Object>) rule.get("actions");
-                    System.out.println("transitionName: " + actions.get("transitionName"));
-                    System.out.println("partnerStatusDescription: " + actions.get("partnerStatusDescription"));
-                    System.out.println("----");
-                }
-            }
+            inputStream = TypeReference.class.getResourceAsStream("/DecisionRules/TransitionState.json");
+            config = objectMapper.readValue(inputStream, Map.class);
+            this.stateChangeConfig = config;
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,0 +1,26 @@
+{
+  "rules": [
+    {
+      "service": "REMIT",
+      "partnerStatus": "0",
+      "partnerSubStatus": "1000",
+      "actions": {
+        "transitionName": "PAYOUT_ACKNOWLEDGED",
+        "stateName": "PAYOUT_ACKNOWLEDGED",
+        "partnerStatusDescription": "Transaction Acknowledged successfully",
+        "isPayable": true
+      }
+    },
+    {
+      "service": "STATUS",
+      "partnerStatus": "0",
+      "partnerSubStatus": "1001",
+      "actions": {
+        "transitionName": "DELIVERED",
+        "stateName": "DELIVERED",
+        "partnerStatusDescription": "Paid successful",
+        "isPayable": true
+      }
+    }
+  ]
+}
