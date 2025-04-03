@@ -3,7 +3,7 @@
 
 ## 👉 Project overview
 
-🚀 A scalable and robust backend system for processing international money transfers, handling transaction validations, and seamless integration with country-specific payment service providers (PSPs).
+🚀 A backend system for processing international money transfers, handling transaction validations, and seamless integration with country-specific payment service providers (PSPs).
 
 ### APIs for the transaction
 
